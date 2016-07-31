@@ -7,7 +7,7 @@ A SQL store for [better-queue](https://github.com/diamondio/better-queue).
 
 Install this store with npm:
 ```bash
-npm install --save better-queue-sql-store
+npm install --save better-queue-sql
 ```
 
 Configure your queue to use the sql store:
@@ -23,7 +23,7 @@ var q = new Queue(fn, {
 ... or instantiate it and pass it to the store directly:
 
 ```js
-var SQLStore = require('better-queue-sql-store');
+var SQLStore = require('better-queue-sql');
 var store = new SQLStore(opts);
 var q = new Queue(fn, { store: store })
 ```
