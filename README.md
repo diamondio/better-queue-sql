@@ -1,15 +1,36 @@
-# Better Queue - Memory Store
+# Better Queue - SQL Store
 
-The fastest, most performant, ephemeral store for [better-queue](https://github.com/diamondio/better-queue).
+A SQL store for [better-queue](https://github.com/diamondio/better-queue).
 
 
 ### Getting started
 
-There's nothing to do! It's included with `better-queue` and used by default.
+Install this store with npm:
+```bash
+npm install --save better-queue-sql-store
+```
+
+Configure your queue to use the sql store:
+```js
+var q = new Queue(fn, {
+  store: {
+    type: 'sql',
+    ... more options here
+  }
+})
+```
+
+... or instantiate it and pass it to the store directly:
+
+```js
+var SQLStore = require('better-queue-sql-store');
+var store = new SQLStore(opts);
+var q = new Queue(fn, { store: store })
+```
 
 ### Examples
 
-Please have a look at the [better-queue](https://github.com/diamondio/better-queue) documentation on how to use this store.
+Please have a look at the [better-queue](https://github.com/diamondio/better-queue) documentation on how to set up and use stores.
 
 ### Contributions
 
