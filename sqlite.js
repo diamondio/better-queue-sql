@@ -16,6 +16,13 @@ SqliteAdapter.prototype.connect = function (cb) {
     },
     debug: false,
     useNullAsDefault: true,
+    pool: {
+      min: 1,
+      max: 1,
+      requestTimeout: 30,
+    },
+    refreshIdle: false,
+    acquireConnectionTimeout: 60,
   });
   cb();
 };
@@ -30,6 +37,7 @@ SqliteAdapter.prototype.upsert = function (properties, cb) {
 };
 
 SqliteAdapter.prototype.close = function (cb) {
+  if (this.knex && this.knex.client) this.knex.client.pool.destroy();
   setImmediate(cb);
 };
 
