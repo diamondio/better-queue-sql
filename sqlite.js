@@ -2,6 +2,7 @@ var fs      = require('fs');
 var extend  = require('extend');
 var util    = require('util');
 var knex    = require('knex');
+var async   = require('async');
 
 function SqliteAdapter(opts) {
   extend(this, opts);
@@ -19,21 +20,25 @@ SqliteAdapter.prototype.connect = function (cb) {
     pool: {
       min: 1,
       max: 1,
-      requestTimeout: 30,
+      requestTimeout: 200,
     },
     refreshIdle: false,
-    acquireConnectionTimeout: 60,
+    acquireConnectionTimeout: 200,
   });
+  var self = this;
+  this._upsertQueue = async.queue(function (properties, cb) {
+    var keys = Object.keys(properties);
+    var values = keys.map(function (k) {
+      return properties[k];
+    });
+    var sql = 'INSERT OR REPLACE INTO ' + self.tableName + ' (' + keys.join(',') + ') VALUES (' + values.map(function (x) { return '?'; }).join(',') + ')';
+    self.knex.raw(sql, values).then(function () { cb(); }).error(cb);
+  })
   cb();
 };
 
 SqliteAdapter.prototype.upsert = function (properties, cb) {
-  var keys = Object.keys(properties);
-  var values = keys.map(function (k) {
-    return properties[k];
-  });
-  var sql = 'INSERT OR REPLACE INTO ' + this.tableName + ' (' + keys.join(',') + ') VALUES (' + values.map(function (x) { return '?'; }).join(',') + ')';
-  this.knex.raw(sql, values).then(function () { cb(); }).error(cb);
+  this._upsertQueue.push(properties, cb);
 };
 
 SqliteAdapter.prototype.close = function (cb) {
