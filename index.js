@@ -14,6 +14,9 @@ function SqlStore(opts) {
   } else if (dialect === 'postgres') {
     var Adapter = require('./postgres');
     this.adapter = new Adapter(opts);
+  } else if (dialect === 'mysql') {
+    var Adapter = require('./mysql');
+    this.adapter = new Adapter(opts);
   } else {
     throw new Error("Unhandled dialect: " + dialect);
   }
@@ -47,6 +50,8 @@ SqlStore.prototype.connect = function (cb) {
       sql += ", added INTEGER PRIMARY KEY AUTOINCREMENT)";
     } else if (dialect === 'postgres') {
       sql += ", added SERIAL PRIMARY KEY)";
+    } else if (dialect === 'mysql') {
+      sql += ", added INTEGER PRIMARY KEY AUTOINCREMENT)";
     } else {
       throw new Error("Unhandled dialect: " + dialect);
     }
