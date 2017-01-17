@@ -30,6 +30,12 @@ var takeNextN = function (first) {
     var subquery = function (fields, n) {
       return self.adapter.knex(self.tableName).select(fields).where('lock', '').orderBy('priority', 'DESC').orderBy('added', first ? 'ASC' : 'DESC').limit(n);
     };
+    if (self.dialect == 'mysql') {
+      var innerSubquery = subquery;
+      subquery = function (fields, n) {
+        return self.adapter.knex.select(fields).from(innerSubquery(fields, n).as('tmp'));
+      }
+    }
     var lockId = uuid.v4();
     self.adapter.knex(self.tableName)
       .where('lock', '').andWhere('id', 'in', subquery(['id'], n))
@@ -44,14 +50,14 @@ SqlStore.prototype.connect = function (cb) {
   var self = this;
   self.adapter.connect(function (err) {
     if (err) return cb(err);
-    var sql = util.format("CREATE TABLE IF NOT EXISTS %s (id TEXT UNIQUE, lock TEXT, task TEXT, priority NUMERIC", self.tableName);
+    var sql = util.format("CREATE TABLE IF NOT EXISTS %s ", self.tableName);
     var dialect = self.dialect;
     if (dialect === 'sqlite') {
-      sql += ", added INTEGER PRIMARY KEY AUTOINCREMENT)";
+      sql += "(id TEXT UNIQUE, lock TEXT, task TEXT, priority NUMERIC, added INTEGER PRIMARY KEY AUTOINCREMENT)";
     } else if (dialect === 'postgres') {
-      sql += ", added SERIAL PRIMARY KEY)";
+      sql += "(id TEXT UNIQUE, lock TEXT, task TEXT, priority NUMERIC, added SERIAL PRIMARY KEY)";
     } else if (dialect === 'mysql') {
-      sql += ", added INTEGER PRIMARY KEY AUTOINCREMENT)";
+      sql += "(id VARCHAR(255) UNIQUE, `lock` TEXT, task TEXT, priority NUMERIC, added INTEGER PRIMARY KEY AUTO_INCREMENT)";
     } else {
       throw new Error("Unhandled dialect: " + dialect);
     }

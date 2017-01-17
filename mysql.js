@@ -27,8 +27,14 @@ MysqlAdapter.prototype.connect = function (cb) {
 };
 
 MysqlAdapter.prototype.upsert = function (properties, cb) {
-  var args = [properties.id, properties.lock, properties.task, properties.priority];
-  this.knex.raw("REPLACE INTO " + this.tableName + " VALUES (?, ?, ?, ?)", args)
+  var keys = Object.keys(properties);
+  var values = keys.map(function (k) {
+    return properties[k];
+  });
+  var sql = 'REPLACE INTO ' + this.tableName +
+    ' (' + keys.map(function (key) { return '`' + key + '`'; }).join(',') +
+    ') VALUES (' + values.map(function (x) { return '?'; }).join(',') + ')';
+  this.knex.raw(sql, values)
     .then(function () { cb(); })
     .error(cb);
 };
