@@ -68,11 +68,7 @@ PostgresAdapter.prototype.upsert = function (properties, cb) {
 };
 
 PostgresAdapter.prototype.close = function (cb) {
-  var self = this;
-  if (!self.knex) return cb();
-  self.knex.raw('DROP FUNCTION IF EXISTS upsert_' + self.tableName + '(text, text, text, numeric)').then(function () {
-    self.knex.schema.dropTableIfExists(self.tableName).then(function () { cb(); }).error(cb);
-  }).error(cb);
+  return cb()
 };
 
 module.exports = PostgresAdapter;
