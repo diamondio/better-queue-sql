@@ -12,6 +12,7 @@ MysqlAdapter.prototype.connect = function (cb) {
     port: this.port || 3306,
     user: this.username || 'root',
     password: this.password || '',
+    charset: this.charset || 'utf8'
   };
   this.knex = require('knex')({
     client: 'mysql',
