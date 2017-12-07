@@ -23,7 +23,7 @@ SqliteAdapter.prototype.connect = function (cb) {
       requestTimeout: 200,
     },
     refreshIdle: false,
-    acquireConnectionTimeout: 200,
+    acquireConnectionTimeout: this.acquireConnectionTimeout || 200,
   });
   var self = this;
   this._upsertQueue = async.queue(function (properties, cb) {
