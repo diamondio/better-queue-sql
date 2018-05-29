@@ -62,7 +62,7 @@ SqlStore.prototype.connect = function (cb) {
       throw new Error("Unhandled dialect: " + dialect);
     }
     self.adapter.knex.raw(sql).then(function () {
-      self.adapter.knex(self.tableName).count('*').where('lock', '').then(function (rows) {
+      self.adapter.knex(self.tableName).count('*').then(function (rows) {
         var row = rows[0];
         cb(null, row ? row['count'] || row['count(*)'] : 0);
       });
