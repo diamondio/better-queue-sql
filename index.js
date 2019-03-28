@@ -41,7 +41,9 @@ var takeNextN = function (first) {
       .where('lock', '').andWhere('id', 'in', subquery(['id'], n))
       .update({ lock: lockId })
       .then(function (numUpdated) {
-        cb(null, numUpdated > 0 ? lockId : '');
+        var val = numUpdated > 0 ? lockId : '';
+        cb(null, val);
+        return val;
       }).error(cb);
   };
 };
@@ -61,10 +63,12 @@ SqlStore.prototype.connect = function (cb) {
     } else {
       throw new Error("Unhandled dialect: " + dialect);
     }
-    self.adapter.knex.raw(sql).then(function () {
-      self.adapter.knex(self.tableName).count('*').where('lock', '').then(function (rows) {
+    return self.adapter.knex.raw(sql).then(function () {
+      return self.adapter.knex(self.tableName).count('*').where('lock', '').then(function (rows) {
         var row = rows[0];
-        cb(null, row ? row['count'] || row['count(*)'] : 0);
+        row = row ? row['count'] || row['count(*)'] : 0;
+        cb(null, row);
+        return row;
       });
     }).error(cb);
   });
