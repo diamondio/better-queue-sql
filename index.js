@@ -84,11 +84,12 @@ SqlStore.prototype.getTask = function (taskId, cb) {
       return cb('failed_to_deserialize_task');
     }
     cb(null, savedTask);
+    return savedTask;
   }).error(cb);
 };
 
 SqlStore.prototype.deleteTask = function (taskId, cb) {
-  this.adapter.knex(this.tableName).where('id', taskId).del().then(function () { cb(); }).error(cb);
+  this.adapter.knex(this.tableName).where('id', taskId).del().then(function () { cb(); return taskId; }).error(cb);
 };
 
 SqlStore.prototype.putTask = function (taskId, task, priority, cb) {
@@ -110,6 +111,7 @@ SqlStore.prototype.getLock = function (lockId, cb) {
       tasks[row.id] = JSON.parse(row.task);
     })
     cb(null, tasks);
+    return tasks;
   }).error(cb);
 };
 
@@ -122,11 +124,12 @@ SqlStore.prototype.getRunningTasks = function (cb) {
       tasks[row.lock][row.id] = JSON.parse(row.task);
     })
     cb(null, tasks);
+    return tasks;
   }).error(cb);
 };
 
 SqlStore.prototype.releaseLock = function (lockId, cb) {
-  this.adapter.knex(this.tableName).where('lock', lockId).del().then(function () { cb(); }).error(cb);
+  this.adapter.knex(this.tableName).where('lock', lockId).del().then(function () { cb(); return lockId; }).error(cb);
 };
 
 SqlStore.prototype.close = function (cb) {
