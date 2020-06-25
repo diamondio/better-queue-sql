@@ -41,7 +41,9 @@ var takeNextN = function (first) {
       .where('lock', '').andWhere('id', 'in', subquery(['id'], n))
       .update({ lock: lockId })
       .then(function (numUpdated) {
-        cb(null, numUpdated > 0 ? lockId : '');
+        var val = numUpdated > 0 ? lockId : '';
+        cb(null, val);
+        return val;
       }).error(cb);
   };
 };
@@ -61,10 +63,12 @@ SqlStore.prototype.connect = function (cb) {
     } else {
       throw new Error("Unhandled dialect: " + dialect);
     }
-    self.adapter.knex.raw(sql).then(function () {
-      self.adapter.knex(self.tableName).count('*').where('lock', '').then(function (rows) {
+    return self.adapter.knex.raw(sql).then(function () {
+      return self.adapter.knex(self.tableName).count('*').where('lock', '').then(function (rows) {
         var row = rows[0];
-        cb(null, row ? row['count'] || row['count(*)'] : 0);
+        row = row ? row['count'] || row['count(*)'] : 0;
+        cb(null, row);
+        return row;
       });
     }).error(cb);
   });
@@ -80,11 +84,12 @@ SqlStore.prototype.getTask = function (taskId, cb) {
       return cb('failed_to_deserialize_task');
     }
     cb(null, savedTask);
+    return savedTask;
   }).error(cb);
 };
 
 SqlStore.prototype.deleteTask = function (taskId, cb) {
-  this.adapter.knex(this.tableName).where('id', taskId).del().then(function () { cb(); }).error(cb);
+  this.adapter.knex(this.tableName).where('id', taskId).del().then(function () { cb(); return taskId; }).error(cb);
 };
 
 SqlStore.prototype.putTask = function (taskId, task, priority, cb) {
@@ -106,6 +111,7 @@ SqlStore.prototype.getLock = function (lockId, cb) {
       tasks[row.id] = JSON.parse(row.task);
     })
     cb(null, tasks);
+    return tasks;
   }).error(cb);
 };
 
@@ -118,11 +124,12 @@ SqlStore.prototype.getRunningTasks = function (cb) {
       tasks[row.lock][row.id] = JSON.parse(row.task);
     })
     cb(null, tasks);
+    return tasks;
   }).error(cb);
 };
 
 SqlStore.prototype.releaseLock = function (lockId, cb) {
-  this.adapter.knex(this.tableName).where('lock', lockId).del().then(function () { cb(); }).error(cb);
+  this.adapter.knex(this.tableName).where('lock', lockId).del().then(function () { cb(); return lockId; }).error(cb);
 };
 
 SqlStore.prototype.close = function (cb) {
