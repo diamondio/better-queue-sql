@@ -13,6 +13,11 @@ PostgresAdapter.prototype.connect = function (cb) {
       user: this.username || 'postgres',
       password: this.password || '',
     };
+  
+  if (this.ssl) {
+    extend(connection, { ssl: this.ssl })
+  }
+
   this.knex = require('knex')({
     client: 'pg',
     connection: connection,
