@@ -20,7 +20,7 @@ SqliteAdapter.prototype.connect = function (cb) {
     pool: {
       min: 1,
       max: 1,
-      requestTimeout: 200,
+      requestTimeout: this.requestTimeout || 200,
     },
     refreshIdle: false,
     acquireConnectionTimeout: this.acquireConnectionTimeout || 200,
