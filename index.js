@@ -59,7 +59,7 @@ SqlStore.prototype.connect = function (cb) {
     } else if (dialect === 'postgres') {
       sql += "(id TEXT UNIQUE, lock TEXT, task TEXT, priority NUMERIC, added SERIAL PRIMARY KEY)";
     } else if (dialect === 'mysql') {
-      sql += "(id VARCHAR(255) UNIQUE, `lock` TEXT, task TEXT, priority NUMERIC, added INTEGER PRIMARY KEY AUTO_INCREMENT)";
+      sql += "(id VARCHAR(191) UNIQUE, `lock` TEXT, task TEXT, priority NUMERIC, added INTEGER PRIMARY KEY AUTO_INCREMENT)";
     } else {
       throw new Error("Unhandled dialect: " + dialect);
     }
