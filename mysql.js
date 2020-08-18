@@ -37,7 +37,7 @@ MysqlAdapter.prototype.upsert = function (properties, cb) {
     ') VALUES (' + values.map(function (x) { return '?'; }).join(',') + ')';
   this.knex.raw(sql, values)
     .then(function () { cb(); })
-    .error(cb);
+    .catch(cb);
 };
 
 MysqlAdapter.prototype.close = function (cb) {

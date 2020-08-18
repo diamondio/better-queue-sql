@@ -60,7 +60,7 @@ PostgresAdapter.prototype.initialize = function (cb) {
   ';
   this.knex.raw(sql).then(function (res) {
     cb();
-  }).error(function (err) {
+  }).catch(function (err) {
     cb(err);
   });
 };
@@ -69,7 +69,7 @@ PostgresAdapter.prototype.upsert = function (properties, cb) {
   var args = [properties.id, properties.lock, properties.task, properties.priority];
   this.knex.raw("SELECT upsert_" + this.tableName + "(?, ?, ?, ?)", args)
     .then(function () { cb(); })
-    .error(cb);
+    .catch(cb);
 };
 
 PostgresAdapter.prototype.close = function (cb) {

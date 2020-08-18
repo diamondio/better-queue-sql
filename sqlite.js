@@ -32,7 +32,7 @@ SqliteAdapter.prototype.connect = function (cb) {
       return properties[k];
     });
     var sql = 'INSERT OR REPLACE INTO ' + self.tableName + ' (' + keys.join(',') + ') VALUES (' + values.map(function (x) { return '?'; }).join(',') + ')';
-    self.knex.raw(sql, values).then(function () { cb(); }).error(cb);
+    self.knex.raw(sql, values).then(function () { cb(); }).catch(cb);
   })
   cb();
 };
