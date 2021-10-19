@@ -44,7 +44,7 @@ var takeNextN = function (first) {
         var val = numUpdated > 0 ? lockId : '';
         cb(null, val);
         return val;
-      }).error(cb);
+      }).catch(cb);
   };
 };
 
@@ -70,7 +70,7 @@ SqlStore.prototype.connect = function (cb) {
         cb(null, row);
         return row;
       });
-    }).error(cb);
+    }).catch(cb);
   });
 };
 
@@ -85,11 +85,11 @@ SqlStore.prototype.getTask = function (taskId, cb) {
     }
     cb(null, savedTask);
     return savedTask;
-  }).error(cb);
+  }).catch(cb);
 };
 
 SqlStore.prototype.deleteTask = function (taskId, cb) {
-  this.adapter.knex(this.tableName).where('id', taskId).del().then(function () { cb(); return taskId; }).error(cb);
+  this.adapter.knex(this.tableName).where('id', taskId).del().then(function () { cb(); return taskId; }).catch(cb);
 };
 
 SqlStore.prototype.putTask = function (taskId, task, priority, cb) {
@@ -112,7 +112,7 @@ SqlStore.prototype.getLock = function (lockId, cb) {
     })
     cb(null, tasks);
     return tasks;
-  }).error(cb);
+  }).catch(cb);
 };
 
 SqlStore.prototype.getRunningTasks = function (cb) {
@@ -125,11 +125,11 @@ SqlStore.prototype.getRunningTasks = function (cb) {
     })
     cb(null, tasks);
     return tasks;
-  }).error(cb);
+  }).catch(cb);
 };
 
 SqlStore.prototype.releaseLock = function (lockId, cb) {
-  this.adapter.knex(this.tableName).where('lock', lockId).del().then(function () { cb(); return lockId; }).error(cb);
+  this.adapter.knex(this.tableName).where('lock', lockId).del().then(function () { cb(); return lockId; }).catch(cb);
 };
 
 SqlStore.prototype.close = function (cb) {
